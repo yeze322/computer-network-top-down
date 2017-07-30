@@ -3,7 +3,7 @@ import sys
 import time
 import socket
 from multiprocessing import Process
-from handlers.chat import chatHandler
+from handlers.http import HTTPHandler
 
 def userInterruptHandler():
   while True:
@@ -19,11 +19,12 @@ def userInterruptHandler():
 
 def socketMain(connHandler):
   HOST = 'localhost'
-  PORT = 6666
+  PORT = 8888
 
   with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind((HOST, PORT))
     s.listen(1)
+    print('server runnning... ', s.getsockname())
     while True:
       conn, addr = s.accept()
       print('[Connected]: ', addr)
@@ -32,7 +33,8 @@ def socketMain(connHandler):
       conn.close()
 
 if __name__ == '__main__':
-  p_socket = Process(target=socketMain, args=(chatHandler,))
+  handler = HTTPHandler
+  p_socket = Process(target=socketMain, args=(handler,))
   p_socket.start()
   print('Socket process running... PID: ', p_socket.pid)
   print('Bg process is running... PID: ', os.getpid())
